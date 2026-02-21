@@ -4,17 +4,22 @@
     box-sizing: border-box;
 }
 
-body, html {
+body,
+html {
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    /* Allow scrolling now that we have content */
+    overflow-y: auto;
+    overflow-x: hidden;
     background: linear-gradient(135deg, #020005 0%, #0a0a1a 100%);
     font-family: 'Inter', sans-serif;
     color: #ffffff;
+    scroll-behavior: smooth;
 }
 
 #canvas {
-    position: absolute;
+    position: fixed;
+    /* Keep canvas fixed in background */
     top: 0;
     left: 0;
     width: 100%;
@@ -22,55 +27,111 @@ body, html {
     z-index: 0;
 }
 
-.content {
+.content-wrapper {
     position: relative;
     z-index: 10;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    height: 100vh;
-    pointer-events: none; /* Allows cursor interactions with canvas underneath */
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem 5rem 1rem;
+    pointer-events: none;
+    /* Let clicks pass through default */
+}
+
+/* Enable pointer events only for interactive elements */
+.content-wrapper>* {
+    pointer-events: auto;
+}
+
+/* Glassmorphism Base Class */
+.glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Hero Section Specifics */
+.hero-section {
+    text-align: center;
+    margin-top: 5vh;
+    animation: fadeInDown 1.5s ease-out forwards;
 }
 
 h1 {
-    font-size: 5rem;
+    font-size: 4.5rem;
     font-weight: 800;
     letter-spacing: -2px;
-    margin-bottom: 0.5rem;
-    background: linear-gradient(to right, #ffffff, #8888aa);
+    margin-bottom: 0.25rem;
+    background: linear-gradient(135deg, #ffffff 0%, #aaddff 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: fadeInDown 1.5s ease-out forwards;
-    opacity: 0;
 }
 
-p {
+.subtitle {
     font-size: 1.25rem;
-    font-weight: 300;
+    font-weight: 400;
     color: #a0a0b0;
-    margin-bottom: 2.5rem;
-    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    animation: fadeInUp 1.5s ease-out 0.5s forwards;
-    opacity: 0;
+}
+
+.contact-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+    color: #e0e0e0;
+    flex-wrap: wrap;
+}
+
+.contact-info a {
+    color: #aaddff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contact-info a:hover {
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(170, 221, 255, 0.6);
+}
+
+.divider {
+    color: #444;
 }
 
 .links {
-    pointer-events: auto; /* Re-enable clicking for links */
     display: flex;
+    justify-content: center;
     gap: 2rem;
-    animation: fadeIn 2s ease-out 1s forwards;
-    opacity: 0;
+    flex-wrap: wrap;
 }
 
 .links a {
     color: #ffffff;
     text-decoration: none;
-    font-size: 1rem;
-    font-weight: 400;
+    font-size: 0.9rem;
+    font-weight: 600;
     padding-bottom: 5px;
-    border-bottom: 1px solid transparent;
+    border-bottom: 2px solid transparent;
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -78,27 +139,172 @@ p {
 
 .links a:hover {
     color: #aaddff;
-    border-bottom: 1px solid #aaddff;
+    border-bottom: 2px solid #aaddff;
     text-shadow: 0 0 10px rgba(170, 221, 255, 0.5);
 }
 
+/* Resume Sections */
+.resume-section {
+    animation: fadeInUp 1.5s ease-out forwards;
+    opacity: 0;
+    /* Will be triggered by scroll ideally, but auto-animating for now */
+    animation-delay: 0.3s;
+}
+
+.resume-section:nth-child(3) {
+    animation-delay: 0.5s;
+}
+
+.resume-section:nth-child(4) {
+    animation-delay: 0.7s;
+}
+
+.resume-section:nth-child(5) {
+    animation-delay: 0.9s;
+}
+
+.resume-section h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #ffffff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
+}
+
+.resume-section p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #cccccc;
+    font-weight: 300;
+}
+
+/* List Items Styling */
+.experience-item,
+.education-item,
+.competition-item {
+    margin-bottom: 2rem;
+}
+
+.experience-item:last-child,
+.education-item:last-child,
+.competition-item:last-child {
+    margin-bottom: 0;
+}
+
+.item-header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.item-header h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 0.3rem;
+}
+
+.item-header .company {
+    font-size: 1.1rem;
+    color: #aaddff;
+    font-weight: 400;
+    margin-bottom: 0.2rem;
+}
+
+.item-header .date {
+    font-size: 0.9rem;
+    color: #888899;
+    font-weight: 400;
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+ul li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #cccccc;
+    font-weight: 300;
+}
+
+ul li::before {
+    content: "▹";
+    position: absolute;
+    left: 0;
+    color: #aaddff;
+    font-weight: bold;
+}
+
+/* Specifics */
+.highlight-text {
+    color: #e0e0e0 !important;
+    font-weight: 500 !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.diploma-plus {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.diploma-plus h4 {
+    font-size: 1rem;
+    color: #ffffff;
+    margin-bottom: 0.8rem;
+    font-weight: 500;
+}
+
+/* Animations */
 @keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-30px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
+/* Responsive */
 @media (max-width: 768px) {
-    h1 { font-size: 3.5rem; }
-    p { font-size: 1rem; }
-    .links { gap: 1rem; }
+    h1 {
+        font-size: 3rem;
+    }
+
+    .glass-card {
+        padding: 1.5rem;
+    }
+
+    .item-header h3 {
+        font-size: 1.2rem;
+    }
+
+    .links {
+        gap: 1rem;
+    }
+
+    .content-wrapper {
+        padding-top: 1rem;
+    }
 }

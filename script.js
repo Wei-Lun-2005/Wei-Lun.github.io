@@ -15,7 +15,7 @@ let mouse = {
 
 window.addEventListener('mousemove', function (event) {
     mouse.x = event.x;
-    mouse.y = event.y;
+    mouse.y = event.y; // removed scroll offset because canvas is fixed
 });
 
 // Avoid lingering repulsion when mouse leaves the window
@@ -132,6 +132,35 @@ window.addEventListener('resize', function () {
     init(); // Reinitialize to adjust particle density for new screen size
 });
 
-// Start
+// Start Canvas Animation
 init();
 animate();
+
+// --- SCROLL ANIMATIONS ---
+document.addEventListener('DOMContentLoaded', () => {
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.15 // trigger when 15% of element is visible
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Add class to trigger CSS animation
+                entry.target.style.animationPlayState = 'running';
+                entry.target.style.opacity = 1;
+                observer.unobserve(entry.target); // only animate once
+            }
+        });
+    }, observerOptions);
+
+    // Select all resume sections to observe
+    const sections = document.querySelectorAll('.resume-section');
+    sections.forEach(section => {
+        // Pause animation initially
+        section.style.animationPlayState = 'paused';
+        section.style.opacity = 0; // Ensure it's hidden before scroll
+        observer.observe(section);
+    });
+});
