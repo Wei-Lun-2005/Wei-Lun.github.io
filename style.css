@@ -1,0 +1,104 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: linear-gradient(135deg, #020005 0%, #0a0a1a 100%);
+    font-family: 'Inter', sans-serif;
+    color: #ffffff;
+}
+
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    pointer-events: none; /* Allows cursor interactions with canvas underneath */
+}
+
+h1 {
+    font-size: 5rem;
+    font-weight: 800;
+    letter-spacing: -2px;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to right, #ffffff, #8888aa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: fadeInDown 1.5s ease-out forwards;
+    opacity: 0;
+}
+
+p {
+    font-size: 1.25rem;
+    font-weight: 300;
+    color: #a0a0b0;
+    margin-bottom: 2.5rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    animation: fadeInUp 1.5s ease-out 0.5s forwards;
+    opacity: 0;
+}
+
+.links {
+    pointer-events: auto; /* Re-enable clicking for links */
+    display: flex;
+    gap: 2rem;
+    animation: fadeIn 2s ease-out 1s forwards;
+    opacity: 0;
+}
+
+.links a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 400;
+    padding-bottom: 5px;
+    border-bottom: 1px solid transparent;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.links a:hover {
+    color: #aaddff;
+    border-bottom: 1px solid #aaddff;
+    text-shadow: 0 0 10px rgba(170, 221, 255, 0.5);
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+    h1 { font-size: 3.5rem; }
+    p { font-size: 1rem; }
+    .links { gap: 1rem; }
+}
