@@ -1,3 +1,6 @@
+// ============================================================
+// PARTICLE CANVAS (preserved from original)
+// ============================================================
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
@@ -6,67 +9,35 @@ canvas.height = window.innerHeight;
 
 let particlesArray = [];
 
-// Mouse configuration
-let mouse = {
-    x: undefined,
-    y: undefined,
-    radius: 180 // Repulsion radius
-};
+let mouse = { x: undefined, y: undefined, radius: 180 };
 
-window.addEventListener('mousemove', function (event) {
-    mouse.x = event.x;
-    mouse.y = event.y; // removed scroll offset because canvas is fixed
-});
-
-// Avoid lingering repulsion when mouse leaves the window
-window.addEventListener('mouseout', function () {
-    mouse.x = undefined;
-    mouse.y = undefined;
-});
+window.addEventListener('mousemove', e => { mouse.x = e.x; mouse.y = e.y; });
+window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
 
 class Particle {
     constructor(x, y, vx, vy, size, color) {
-        this.x = x;
-        this.y = y;
-        this.vx = vx;
-        this.vy = vy;
-        this.size = size;
-        this.color = color;
+        this.x = x; this.y = y;
+        this.vx = vx; this.vy = vy;
+        this.size = size; this.color = color;
     }
-
     draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
         ctx.fillStyle = this.color;
         ctx.fill();
     }
-
     update() {
-        // Bounce off edges
         if (this.x > canvas.width || this.x < 0) this.vx = -this.vx;
         if (this.y > canvas.height || this.y < 0) this.vy = -this.vy;
-
-        // Anti-Gravity / Repulsion logic
-        if (mouse.x != undefined && mouse.y != undefined) {
-            let dx = mouse.x - this.x;
-            let dy = mouse.y - this.y;
-            let distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance < mouse.radius) {
-                const forceDirectionX = dx / distance;
-                const forceDirectionY = dy / distance;
-
-                // The closer the mouse, the stronger the push
-                const force = (mouse.radius - distance) / mouse.radius;
-                const pushFactor = 1.5; // Reduced from 4
-
-                // Move particle away from mouse
-                this.x -= forceDirectionX * force * pushFactor;
-                this.y -= forceDirectionY * force * pushFactor;
+        if (mouse.x !== undefined && mouse.y !== undefined) {
+            let dx = mouse.x - this.x, dy = mouse.y - this.y;
+            let dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < mouse.radius) {
+                const force = (mouse.radius - dist) / mouse.radius;
+                this.x -= (dx / dist) * force * 1.5;
+                this.y -= (dy / dist) * force * 1.5;
             }
         }
-
-        // Apply normal velocity
         this.x += this.vx;
         this.y += this.vy;
         this.draw();
@@ -75,37 +46,28 @@ class Particle {
 
 function init() {
     particlesArray = [];
-    // Dynamic particle count based on screen size (keeps it looking good on any monitor)
-    let numberOfParticles = (canvas.height * canvas.width) / 10000;
-
-    for (let i = 0; i < numberOfParticles; i++) {
-        let size = (Math.random() * 2) + 0.5;
-        let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
-        let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-        let vx = (Math.random() * 0.5) - 0.25; // Slower velocity
-        let vy = (Math.random() * 0.5) - 0.25;
-
-        // Subtle blue-ish white tint for premium tech feel
-        let color = 'rgba(200, 220, 255, 0.8)';
-
-        particlesArray.push(new Particle(x, y, vx, vy, size, color));
+    const count = (canvas.height * canvas.width) / 10000;
+    for (let i = 0; i < count; i++) {
+        const size = Math.random() * 2 + 0.5;
+        particlesArray.push(new Particle(
+            Math.random() * (innerWidth - size * 4) + size * 2,
+            Math.random() * (innerHeight - size * 4) + size * 2,
+            (Math.random() * 0.5) - 0.25,
+            (Math.random() * 0.5) - 0.25,
+            size,
+            'rgba(200, 220, 255, 0.8)'
+        ));
     }
 }
 
-// Draw connection lines between nearby particles
 function connect() {
     for (let a = 0; a < particlesArray.length; a++) {
-        // Optimization: Start from upcoming points, avoiding double checks
         for (let b = a + 1; b < particlesArray.length; b++) {
-            let dx = particlesArray[a].x - particlesArray[b].x;
-            let dy = particlesArray[a].y - particlesArray[b].y;
-            let distance = dx * dx + dy * dy;
-
-            // Connect if squared distance is less than 12000 
-            if (distance < 12000) {
-                let opacityValue = 1 - (distance / 12000);
-                // Same subtle blue-ish white tint for lines
-                ctx.strokeStyle = `rgba(200, 220, 255, ${opacityValue * 0.25})`;
+            const dx = particlesArray[a].x - particlesArray[b].x;
+            const dy = particlesArray[a].y - particlesArray[b].y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < 12000) {
+                ctx.strokeStyle = `rgba(200, 220, 255, ${(1 - d2 / 12000) * 0.25})`;
                 ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
@@ -119,48 +81,94 @@ function connect() {
 function animate() {
     requestAnimationFrame(animate);
     ctx.clearRect(0, 0, innerWidth, innerHeight);
-
-    for (let i = 0; i < particlesArray.length; i++) {
-        particlesArray[i].update();
-    }
+    particlesArray.forEach(p => p.update());
     connect();
 }
 
-window.addEventListener('resize', function () {
+window.addEventListener('resize', () => {
     canvas.width = innerWidth;
     canvas.height = innerHeight;
-    init(); // Reinitialize to adjust particle density for new screen size
+    init();
 });
 
-// Start Canvas Animation
 init();
 animate();
 
-// --- SCROLL ANIMATIONS ---
+// ============================================================
+// RENDER ALL SECTIONS
+// ============================================================
 document.addEventListener('DOMContentLoaded', () => {
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.15 // trigger when 15% of element is visible
-    };
+    renderHero();
+    renderAbout();
+    renderSkills();
+    renderProjects();
+    renderExperience();
+    renderEducation();
+    renderHackathons();
+    renderContact();
 
-    const observer = new IntersectionObserver((entries, observer) => {
+    initNavbar();
+    initScrollObserver();
+});
+
+// ============================================================
+// NAVBAR: sticky scroll style + hamburger + active link
+// ============================================================
+function initNavbar() {
+    const navbar = document.getElementById('navbar');
+    const hamburger = document.getElementById('nav-hamburger');
+    const navLinks = document.getElementById('nav-links');
+
+    // Scrolled class for extra shadow
+    window.addEventListener('scroll', () => {
+        navbar.classList.toggle('scrolled', window.scrollY > 30);
+    });
+
+    // Hamburger toggle
+    hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('open');
+        navLinks.classList.toggle('open');
+    });
+
+    // Close menu when a link is clicked (mobile)
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            hamburger.classList.remove('open');
+            navLinks.classList.remove('open');
+        });
+    });
+}
+
+// ============================================================
+// SCROLL OBSERVER: fade-in sections + active nav link
+// ============================================================
+function initScrollObserver() {
+    const sections = document.querySelectorAll('.site-section');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    // Fade-in on enter
+    const fadeObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                // Add class to trigger CSS animation
-                entry.target.style.animationPlayState = 'running';
-                entry.target.style.opacity = 1;
-                observer.unobserve(entry.target); // only animate once
+                entry.target.classList.add('visible');
+                fadeObserver.unobserve(entry.target);
             }
         });
-    }, observerOptions);
+    }, { threshold: 0.1 });
 
-    // Select all resume sections to observe
-    const sections = document.querySelectorAll('.resume-section');
-    sections.forEach(section => {
-        // Pause animation initially
-        section.style.animationPlayState = 'paused';
-        section.style.opacity = 0; // Ensure it's hidden before scroll
-        observer.observe(section);
-    });
-});
+    sections.forEach(s => fadeObserver.observe(s));
+
+    // Active nav link via scroll position
+    const activeObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.id;
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.dataset.section === id);
+                });
+            }
+        });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+
+    sections.forEach(s => activeObserver.observe(s));
+}
