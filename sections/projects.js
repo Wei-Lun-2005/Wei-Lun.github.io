@@ -13,13 +13,17 @@ function renderProjects() {
                 ${p.highlights.map(h => `<li>${h}</li>`).join('')}
             </ul>
             ${p.images && p.images.length > 0 ? `
-            <div class="proj-scroller">
-                ${p.images.map(img => `
-                <div class="proj-scroller-item">
-                    <img src="${img.src}" alt="${img.caption}">
-                    <div class="proj-scroller-caption">${img.caption}</div>
+            <div class="proj-scroller-wrapper">
+                <button class="proj-nav-btn left" aria-label="Previous image">‹</button>
+                <div class="proj-scroller">
+                    ${p.images.map(img => `
+                    <div class="proj-scroller-item">
+                        <img src="${img.src}" alt="${img.caption}">
+                        <div class="proj-scroller-caption">${img.caption}</div>
+                    </div>
+                    `).join('')}
                 </div>
-                `).join('')}
+                <button class="proj-nav-btn right" aria-label="Next image">›</button>
             </div>` : ''}
         </div>
     `).join('');
@@ -105,6 +109,34 @@ function initProjectScrollers() {
         // Initial call
         if (items.length > 0) {
             updateFocus();
+        }
+
+        // Navigation Arrows Logic
+        const wrapper = scroller.parentElement;
+        if (wrapper && wrapper.classList.contains('proj-scroller-wrapper')) {
+            const btnLeft = wrapper.querySelector('.proj-nav-btn.left');
+            const btnRight = wrapper.querySelector('.proj-nav-btn.right');
+
+            // Calculate item width including gap
+            // Fallback to 300px (mobile) if calculaton fails, otherwise use item width + standard 24px (1.5rem) gap
+            const getItemScrollWidth = () => {
+                const item = items[0];
+                return item ? item.offsetWidth + 24 : 300;
+            };
+
+            if (btnLeft) {
+                btnLeft.addEventListener('click', () => {
+                    const scrollAmount = getItemScrollWidth();
+                    scroller.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                });
+            }
+
+            if (btnRight) {
+                btnRight.addEventListener('click', () => {
+                    const scrollAmount = getItemScrollWidth();
+                    scroller.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                });
+            }
         }
     });
 }

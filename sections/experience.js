@@ -13,13 +13,17 @@ function renderExperience() {
                 ${exp.highlights.map(h => `<li>${h}</li>`).join('')}
             </ul>
             ${exp.images && exp.images.length > 0 ? `
-            <div class="proj-scroller">
-                ${exp.images.map(img => `
-                <div class="proj-scroller-item">
-                    <img src="${img.src}" alt="${img.caption}">
-                    <div class="proj-scroller-caption">${img.caption}</div>
+            <div class="proj-scroller-wrapper">
+                <button class="proj-nav-btn left" aria-label="Previous image">‹</button>
+                <div class="proj-scroller">
+                    ${exp.images.map(img => `
+                    <div class="proj-scroller-item">
+                        <img src="${img.src}" alt="${img.caption}">
+                        <div class="proj-scroller-caption">${img.caption}</div>
+                    </div>
+                    `).join('')}
                 </div>
-                `).join('')}
+                <button class="proj-nav-btn right" aria-label="Next image">›</button>
             </div>` : ''}
         </div>
     `).join('');

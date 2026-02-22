@@ -501,6 +501,57 @@ body {
 }
 
 /* ── Project Image Scroller ── */
+.proj-scroller-wrapper {
+    position: relative;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.proj-nav-btn {
+    position: absolute;
+    top: calc(50% - 1.5rem);
+    /* roughly vertical center of the scroller item */
+    transform: translateY(-50%);
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: rgba(6, 6, 15, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-size: 2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 4px;
+    /* optical adjustment for angle quotes */
+    cursor: pointer;
+    z-index: 10;
+    transition: all var(--transition);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.proj-nav-btn:hover {
+    background: rgba(126, 184, 255, 0.2);
+    border-color: var(--accent);
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.proj-nav-btn.left {
+    left: 1rem;
+    padding-right: 3px;
+    /* visual center adjustment */
+}
+
+.proj-nav-btn.right {
+    right: 1rem;
+    padding-left: 3px;
+    /* visual center adjustment */
+}
+
 .proj-scroller {
     display: flex;
     gap: 1.5rem;
