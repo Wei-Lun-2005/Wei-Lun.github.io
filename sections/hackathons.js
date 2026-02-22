@@ -21,6 +21,15 @@ function renderHackathons() {
             <div class="hackathon-tags">
                 ${h.tags.map(t => `<span class="skill-tag">${t}</span>`).join('')}
             </div>
+            ${h.images && h.images.length > 0 ? `
+            <div class="proj-scroller">
+                ${h.images.map(img => `
+                <div class="proj-scroller-item">
+                    <img src="${img.src}" alt="${img.caption}">
+                    <div class="proj-scroller-caption">${img.caption}</div>
+                </div>
+                `).join('')}
+            </div>` : ''}
         </div>
     `).join('');
 
@@ -31,4 +40,6 @@ function renderHackathons() {
         </div>
         ${cardsHTML}
     `;
+
+    setTimeout(initProjectScrollers, 0);
 }

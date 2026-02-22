@@ -13,6 +13,9 @@ const EXPERIENCE = [
             "Designed and implemented a Proof of Concept (POC) for a Data Fabric architecture, evaluating technical feasibility and business benefits.",
             "Collaborated closely with senior managers and solution architects to ensure alignment with organizational best practices and technical standards.",
             "Gained hands-on experience in cloud deployment on AWS and Microsoft platforms, modern data architectures, and enterprise documentation standards."
+        ],
+        images: [
+          
         ]
     }
 ];

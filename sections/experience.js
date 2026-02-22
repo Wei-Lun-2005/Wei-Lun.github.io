@@ -12,6 +12,15 @@ function renderExperience() {
             <ul class="exp-highlights">
                 ${exp.highlights.map(h => `<li>${h}</li>`).join('')}
             </ul>
+            ${exp.images && exp.images.length > 0 ? `
+            <div class="proj-scroller">
+                ${exp.images.map(img => `
+                <div class="proj-scroller-item">
+                    <img src="${img.src}" alt="${img.caption}">
+                    <div class="proj-scroller-caption">${img.caption}</div>
+                </div>
+                `).join('')}
+            </div>` : ''}
         </div>
     `).join('');
 
@@ -22,4 +31,6 @@ function renderExperience() {
         </div>
         ${itemsHTML}
     `;
+
+    setTimeout(initProjectScrollers, 0);
 }

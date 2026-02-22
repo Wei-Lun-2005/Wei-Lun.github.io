@@ -14,6 +14,10 @@ const HACKATHONS = [
             "Applied Vision-Language Models (VLMs) to identify and localise targets from visual inputs",
             "Advanced through Qualifier round to the Semi-Final at Marina Bay Sands"
         ],
-        tags: ["ASR", "NLP", "VLM", "Computer Vision", "Python"]
+        tags: ["ASR", "NLP", "VLM", "Computer Vision", "Python"],
+        images: [
+            { src: "images/DSTA Til AI competition Day.jpeg", caption: "Competition Day" },
+            { src: "images/Training Model.jpeg", caption: "VLM Training" }
+        ]
     }
 ];
