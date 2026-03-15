@@ -14,11 +14,18 @@ let mouse = { x: undefined, y: undefined, radius: 180 };
 window.addEventListener('mousemove', e => { mouse.x = e.x; mouse.y = e.y; });
 window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
 
+let cols = 0;
+let rows = 0;
+const gridSpacing = 80; // Size of the grid cells
+
 class Particle {
-    constructor(x, y, vx, vy, size, color) {
-        this.x = x; this.y = y;
-        this.vx = vx; this.vy = vy;
-        this.size = size; this.color = color;
+    constructor(x, y, size, color) {
+        this.baseX = x;
+        this.baseY = y;
+        this.x = x;
+        this.y = y;
+        this.size = size;
+        this.color = color;
     }
     draw() {
         ctx.beginPath();
@@ -27,53 +34,42 @@ class Particle {
         ctx.fill();
     }
     update() {
-        if (this.x > canvas.width || this.x < 0) this.vx = -this.vx;
-        if (this.y > canvas.height || this.y < 0) this.vy = -this.vy;
-        if (mouse.x !== undefined && mouse.y !== undefined) {
-            let dx = mouse.x - this.x, dy = mouse.y - this.y;
-            let dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < mouse.radius) {
-                const force = (mouse.radius - dist) / mouse.radius;
-                this.x -= (dx / dist) * force * 1.5;
-                this.y -= (dy / dist) * force * 1.5;
-            }
+        let dx = mouse.x - this.baseX;
+        let dy = mouse.y - this.baseY;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (mouse.x !== undefined && distance < mouse.radius && distance > 0.1) {
+            let force = (mouse.radius - distance) / mouse.radius;
+            let pushDist = force * 80;
+            
+            let targetX = this.baseX - (dx / distance) * pushDist;
+            let targetY = this.baseY - (dy / distance) * pushDist;
+            
+            this.x += (targetX - this.x) * 0.15;
+            this.y += (targetY - this.y) * 0.15;
+        } else {
+            this.x += (this.baseX - this.x) * 0.05;
+            this.y += (this.baseY - this.y) * 0.05;
         }
-        this.x += this.vx;
-        this.y += this.vy;
         this.draw();
     }
 }
 
 function init() {
     particlesArray = [];
-    const count = (canvas.height * canvas.width) / 10000;
-    for (let i = 0; i < count; i++) {
-        const size = Math.random() * 2 + 0.5;
-        particlesArray.push(new Particle(
-            Math.random() * (innerWidth - size * 4) + size * 2,
-            Math.random() * (innerHeight - size * 4) + size * 2,
-            (Math.random() * 0.5) - 0.25,
-            (Math.random() * 0.5) - 0.25,
-            size,
-            'rgba(200, 220, 255, 0.8)'
-        ));
-    }
-}
+    cols = Math.floor(canvas.width / gridSpacing) + 2;
+    rows = Math.floor(canvas.height / gridSpacing) + 2;
+    
+    const offsetX = (canvas.width - (cols - 1) * gridSpacing) / 2;
+    const offsetY = (canvas.height - (rows - 1) * gridSpacing) / 2;
 
-function connect() {
-    for (let a = 0; a < particlesArray.length; a++) {
-        for (let b = a + 1; b < particlesArray.length; b++) {
-            const dx = particlesArray[a].x - particlesArray[b].x;
-            const dy = particlesArray[a].y - particlesArray[b].y;
-            const d2 = dx * dx + dy * dy;
-            if (d2 < 12000) {
-                ctx.strokeStyle = `rgba(200, 220, 255, ${(1 - d2 / 12000) * 0.25})`;
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
-                ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
-                ctx.stroke();
-            }
+    for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+            const x = i * gridSpacing + offsetX;
+            const y = j * gridSpacing + offsetY;
+            particlesArray.push(new Particle(
+                x, y, 1.5, 'rgba(200, 220, 255, 0.8)'
+            ));
         }
     }
 }
@@ -82,7 +78,6 @@ function animate() {
     requestAnimationFrame(animate);
     ctx.clearRect(0, 0, innerWidth, innerHeight);
     particlesArray.forEach(p => p.update());
-    connect();
 }
 
 window.addEventListener('resize', () => {
