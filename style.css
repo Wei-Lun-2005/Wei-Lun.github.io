@@ -504,7 +504,8 @@ body {
 .proj-scroller-wrapper {
     position: relative;
     width: 100%;
-    margin-top: 0.5rem;
+    /* The parent card already supplies the gap above; the scroller's own
+       padding supplies the room below. No extra margins here. */
 }
 
 .proj-nav-btn {
@@ -557,8 +558,7 @@ body {
     gap: 1.5rem;
     overflow-x: auto;
     /* Default for mobile */
-    padding: 1rem 10% 1.5rem;
-    margin-top: 0.5rem;
+    padding: 1rem 10%;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     position: relative;
@@ -575,7 +575,7 @@ body {
 @media (min-width: 768px) {
     .proj-scroller {
         /* Desktop: Item is exactly 600px wide. Spacer is 50% - 300px to perfectly center it. */
-        padding: 1rem calc(50% - 300px) 1.5rem;
+        padding: 1rem calc(50% - 300px);
     }
 }
 
@@ -710,6 +710,11 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.exp-item:last-child {
+    margin-bottom: 0;
 }
 
 .exp-header {
@@ -788,7 +793,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
 }
 
 .edu-item:last-child {
@@ -895,6 +900,11 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.hackathon-card:last-child {
+    margin-bottom: 0;
 }
 
 .hackathon-header {
