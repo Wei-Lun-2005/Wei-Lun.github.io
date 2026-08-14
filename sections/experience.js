@@ -16,12 +16,7 @@ function renderExperience() {
             <div class="proj-scroller-wrapper">
                 <button class="proj-nav-btn left" aria-label="Previous image">‹</button>
                 <div class="proj-scroller">
-                    ${exp.images.map(img => `
-                    <div class="proj-scroller-item">
-                        <img src="${img.src}" alt="${img.caption}">
-                        <div class="proj-scroller-caption">${img.caption}</div>
-                    </div>
-                    `).join('')}
+                    ${exp.images.map(img => renderScrollerItem(img)).join('')}
                 </div>
                 <button class="proj-nav-btn right" aria-label="Next image">›</button>
             </div>` : ''}

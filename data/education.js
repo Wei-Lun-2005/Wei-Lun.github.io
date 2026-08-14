@@ -3,7 +3,7 @@ const EDUCATION = [
     {
         degree: "Bachelor of Computing (Hons) in Data Science and Artificial Intelligence",
         institution: "Nanyang Technological University, Singapore",
-        period: "2025 – Present",
+        period: "2025 – 2029 (Expected)",
         gpa: "CGPA: 4.9 / 5.0",
         honours: "First Class Honours",
         highlights: [

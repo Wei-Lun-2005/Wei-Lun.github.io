@@ -5,5 +5,5 @@ const ACHIEVEMENTS = [
     { title: "Director's List (3x)", subtitle: "Ngee Ann Polytechnic" },
     { title: "Outstanding Performance Award (2x)", subtitle: "Ngee Ann Polytechnic" },
     { title: "Best Module Performance (3x)", subtitle: "Ngee Ann Polytechnic" },
-    { title: "BrainHack TIL-AI Semi-Finalist", subtitle: "DSTA, 2024" }
+    { title: "BrainHack TIL-AI Semi-Finalist (2x)", subtitle: "DSTA, 2024 & 2026" }
 ];

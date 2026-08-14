@@ -16,12 +16,7 @@ function renderProjects() {
             <div class="proj-scroller-wrapper">
                 <button class="proj-nav-btn left" aria-label="Previous image">‹</button>
                 <div class="proj-scroller">
-                    ${p.images.map(img => `
-                    <div class="proj-scroller-item">
-                        <img src="${img.src}" alt="${img.caption}">
-                        <div class="proj-scroller-caption">${img.caption}</div>
-                    </div>
-                    `).join('')}
+                    ${p.images.map(img => renderScrollerItem(img)).join('')}
                 </div>
                 <button class="proj-nav-btn right" aria-label="Next image">›</button>
             </div>` : ''}
@@ -37,6 +32,19 @@ function renderProjects() {
     `;
 
     setTimeout(initProjectScrollers, 0);
+}
+
+/* Shared by projects / experience / hackathons.
+   The blurred copy behind the image fills the frame for portrait or
+   off-ratio shots, so they never sit in an empty black box. */
+function renderScrollerItem(img) {
+    return `
+        <div class="proj-scroller-item">
+            <img class="proj-scroller-bg" src="${img.src}" alt="" aria-hidden="true" loading="lazy">
+            <img class="proj-scroller-img" src="${img.src}" alt="${img.caption}" loading="lazy">
+            <div class="proj-scroller-caption">${img.caption}</div>
+        </div>
+    `;
 }
 
 function initProjectScrollers() {
