@@ -1,69 +1,535 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Ho Wei Lun — Data Science & AI Engineer. Personal site featuring projects, experience, and more.">
-    <title>Ho Wei Lun | Data Science & AI</title>
-    <link rel="stylesheet" href="style.css?v=2.2">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ho Wei Lun</title>
+<meta name="description" content="Ho Wei Lun: AI engineer at OCBC Bank and Data Science & AI undergraduate at NTU.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #05060a;
+    --ink: #ece8df;
+    --dim: #8d8a83;
+    --gold: #f2b84b;
+    --rule: rgba(236, 232, 223, 0.14);
+    --serif: "Instrument Serif", Georgia, serif;
+    --sans: "Instrument Sans", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--bg); }
+body { color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.6; overflow-x: hidden; }
+a { color: inherit; }
+#gl { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; z-index: 0; }
+
+/* ---------- loader ---------- */
+#loader {
+    position: fixed; inset: 0; z-index: 50; background: var(--bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; color: var(--dim);
+    transition: opacity 0.9s ease, visibility 0.9s;
+}
+#loader.done { opacity: 0; visibility: hidden; }
+/* if WebGL never starts, lift the cover anyway */
+#loader { animation: lift 0.9s ease 3s forwards; }
+@keyframes lift { to { opacity: 0; visibility: hidden; } }
+
+/* ---------- chrome ---------- */
+.top {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px 32px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    mix-blend-mode: difference;
+}
+.top a { text-decoration: none; }
+.top nav { display: flex; gap: 22px; }
+.rail {
+    position: fixed; right: 28px; top: 50%; transform: translateY(-50%); z-index: 10;
+    display: flex; flex-direction: column; gap: 14px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+}
+.rail a { display: flex; align-items: center; justify-content: flex-end; gap: 10px; color: var(--dim); text-decoration: none; transition: color 0.3s; }
+.rail a span { opacity: 0; transform: translateX(6px); transition: opacity 0.3s, transform 0.3s; }
+.rail a i { width: 18px; height: 1px; background: currentColor; transition: width 0.3s; }
+.rail a:hover span, .rail a.on span { opacity: 1; transform: none; }
+.rail a.on { color: var(--gold); }
+.rail a.on i { width: 34px; }
+
+/* ---------- stations ---------- */
+main { position: relative; z-index: 1; }
+.station { min-height: 140vh; display: flex; align-items: center; padding: 18vh 7vw; position: relative; }
+.counter { position: fixed; left: 32px; bottom: 26px; z-index: 10; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.12em; color: var(--dim); text-transform: uppercase; }
+.counter b { color: var(--gold); font-weight: 400; }
+.station[data-side="right"] { justify-content: flex-end; }
+.panel { max-width: 540px; position: relative; }
+/* fixed veils behind the text; JS fades the left or right one in to match the panel side */
+.veil { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0; }
+#veilL { background: linear-gradient(to right, rgba(5, 6, 10, 0.88) 0%, rgba(5, 6, 10, 0.55) 38%, transparent 62%); }
+#veilR { background: linear-gradient(to left, rgba(5, 6, 10, 0.88) 0%, rgba(5, 6, 10, 0.55) 38%, transparent 62%); }
+.hero::before, .contact::before { content: ""; position: absolute; inset: 0; pointer-events: none; }
+
+.label { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); display: flex; gap: 14px; align-items: center; }
+.label::after { content: ""; width: 48px; height: 1px; background: var(--gold); opacity: 0.6; }
+.panel h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(44px, 6vw, 84px); line-height: 0.95; margin: 18px 0 10px; letter-spacing: -0.01em; }
+.panel h2 em { color: var(--gold); }
+.meta { font-family: var(--mono); font-size: 12px; color: var(--dim); letter-spacing: 0.04em; margin-bottom: 26px; }
+.stat { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin: 0 0 26px; padding: 14px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.stat b { font-family: var(--serif); font-weight: 400; font-size: 46px; line-height: 1; color: var(--gold); }
+.stat span { font-family: var(--mono); font-size: 11.5px; color: var(--dim); letter-spacing: 0.06em; text-transform: uppercase; }
+.panel ul { list-style: none; display: grid; gap: 12px; }
+.panel li { padding-left: 22px; position: relative; color: #cfcbc2; }
+.panel li::before { content: ""; position: absolute; left: 0; top: 0.78em; width: 10px; height: 1px; background: var(--gold); }
+
+/* reveal on enter */
+.panel > * { opacity: 0; transform: translateY(26px); transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.2, 0.7, 0.1, 1); }
+.station.in .panel > * { opacity: 1; transform: none; }
+.station.in .panel > *:nth-child(2) { transition-delay: 0.08s; }
+.station.in .panel > *:nth-child(3) { transition-delay: 0.16s; }
+.station.in .panel > *:nth-child(4) { transition-delay: 0.24s; }
+.station.in .panel > *:nth-child(5) { transition-delay: 0.32s; }
+.station.in .panel > *:nth-child(6) { transition-delay: 0.40s; }
+
+/* hero */
+.hero { min-height: 100vh; justify-content: center; }
+.hero::before { background: radial-gradient(ellipse at center, rgba(5, 6, 10, 0.78), transparent 70%); }
+.hero .panel { max-width: 1080px; display: grid; grid-template-columns: 280px 1fr; gap: 64px; align-items: center; }
+.hero h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(60px, 9vw, 150px); line-height: 0.86; letter-spacing: -0.02em; }
+.hero h1 em { display: block; color: var(--gold); }
+.hero .sub { font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim); margin-top: 26px; }
+.hero .intro { color: #cfcbc2; font-size: 16.5px; max-width: 46ch; margin-top: 18px; }
+.portrait { position: relative; margin: 0; }
+.portrait img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; filter: grayscale(0.35) contrast(1.04) brightness(0.92); position: relative; z-index: 1; }
+.portrait::after { content: ""; position: absolute; inset: 14px -14px -14px 14px; border: 1px solid var(--gold); opacity: 0.55; }
+.scroll-hint { position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; color: var(--dim); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.scroll-hint i { width: 1px; height: 46px; background: linear-gradient(var(--gold), transparent); animation: drip 2.2s ease-in-out infinite; transform-origin: top; }
+@keyframes drip { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+
+/* thumbnails + lightbox */
+.thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 24px; }
+.thumbs button { aspect-ratio: 4 / 3; border: 1px solid var(--rule); background: #111 center / cover no-repeat; cursor: zoom-in; filter: grayscale(0.6) brightness(0.8); transition: filter 0.4s, border-color 0.4s; }
+.thumbs button:hover { filter: none; border-color: var(--gold); }
+#lightbox { position: fixed; inset: 0; z-index: 60; background: rgba(5, 6, 10, 0.94); display: none; align-items: center; justify-content: center; flex-direction: column; gap: 14px; cursor: zoom-out; padding: 5vw; }
+#lightbox.open { display: flex; }
+#lightbox img { max-width: 100%; max-height: 80vh; }
+#lightbox p { font-family: var(--mono); font-size: 12px; color: var(--dim); letter-spacing: 0.06em; }
+
+/* education + skills */
+.edu { display: grid; gap: 22px; margin-bottom: 30px; }
+.edu h3 { font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.1; }
+.edu .meta { margin: 4px 0 6px; }
+.edu p { color: #cfcbc2; font-size: 14px; }
+.edu .scholar { border-left: 1px solid var(--gold); padding-left: 18px; }
+.edu .scholar .meta { color: var(--gold); }
+.yr { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: var(--gold); margin: 18px 0 10px; }
+.skills { display: grid; gap: 16px; }
+.skills h4 { font-family: var(--mono); font-weight: 400; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); margin-bottom: 8px; }
+.skills div div { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; }
+
+/* contact */
+.contact { text-align: center; justify-content: center; min-height: 120vh; align-items: flex-end; padding-bottom: 14vh; }
+.contact::before { background: linear-gradient(to top, rgba(5, 6, 10, 0.9), transparent 45%); }
+.contact .panel { max-width: none; }
+.contact a.mail { font-family: var(--serif); font-size: clamp(34px, 5.4vw, 80px); text-decoration: none; border-bottom: 1px solid var(--gold); line-height: 1.15; }
+.contact a.mail:hover { color: var(--gold); }
+.contact .links { display: flex; justify-content: center; gap: 28px; margin-top: 26px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
+.contact .links a { color: var(--dim); text-decoration: none; }
+.contact .links a:hover { color: var(--gold); }
+
+@media (max-width: 760px) {
+    .top { padding: 16px; }
+    .top nav { display: none; }
+    .rail { display: none; }
+    .station { padding: 14vh 16px; min-height: 120vh; }
+    .counter { left: 16px; bottom: 16px; }
+    #veilL { background: rgba(5, 6, 10, 0.72); }
+    #veilR { display: none; }
+    .hero::before, .contact::before { background: none; }
+    .panel { max-width: 100%; }
+    .hero .panel { grid-template-columns: 1fr; gap: 40px; }
+    .portrait { max-width: 210px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .panel > * { transition: none; opacity: 1; transform: none; }
+}
+</style>
 </head>
-
 <body>
-    <!-- Particle Canvas Background -->
-    <canvas id="canvas"></canvas>
+<div id="loader"></div>
+<canvas id="gl"></canvas>
+<div class="veil" id="veilL"></div><div class="veil" id="veilR"></div>
 
-    <!-- Sticky Navbar -->
-    <nav id="navbar">
-        <div class="nav-inner">
-            <a class="nav-logo" href="#hero">WL</a>
-            <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu">
-                <span></span><span></span><span></span>
-            </button>
-            <ul class="nav-links" id="nav-links">
-                <li><a href="#about" class="nav-link" data-section="about">About</a></li>
-                <li><a href="#skills" class="nav-link" data-section="skills">Skills</a></li>
-                <li><a href="#projects" class="nav-link" data-section="projects">Projects</a></li>
-                <li><a href="#experience" class="nav-link" data-section="experience">Experience</a></li>
-                <li><a href="#education" class="nav-link" data-section="education">Education</a></li>
-                <li><a href="#hackathons" class="nav-link" data-section="hackathons">Hackathons</a></li>
-                <li><a href="#contact" class="nav-link nav-link-cta" data-section="contact">Contact</a></li>
-            </ul>
+<header class="top">
+    <a href="#s0">Ho Wei Lun</a>
+    <nav><a href="#s1">Work</a><a href="#s5">Projects</a><a href="#s7">Education</a><a href="#s8">Contact</a></nav>
+</header>
+<div class="rail" id="rail"></div>
+<div class="counter" id="counter"></div>
+
+<main id="stations"></main>
+<div id="lightbox"><img alt=""><p></p></div>
+
+<script src="content.js"></script>
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from "three";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+
+// ============================================================
+// HTML: build the stations from SITE content
+// ============================================================
+const [ocbc, ureca, angel, ncs] = SITE.experience;
+const list = items => `<ul>${items.map(t => `<li>${t}</li>`).join("")}</ul>`;
+const stat = s => s ? `<div class="stat"><b>${s.value}</b><span>${s.label}</span></div>` : "";
+const thumbs = imgs => `<div class="thumbs">${imgs.map(i => `<button style="background-image:url('${encodeURI(i.src)}')" data-src="${encodeURI(i.src)}" data-cap="${i.caption}" aria-label="${i.caption}"></button>`).join("")}</div>`;
+const job = (n, e) => `
+    <div class="label">${n} — ${e.period}</div>
+    <h2>${e.short || e.org}</h2>
+    <div class="meta">${e.role}${e.short ? " · " + e.org : ""}</div>
+    ${stat(e.stat)}
+    ${list(e.highlights)}`;
+
+const STATIONS = [
+    { id: "s0", name: "About", cls: "hero", html: `
+        <figure class="portrait"><img src="images/profile.jpg" alt="Portrait of Ho Wei Lun"></figure>
+        <div>
+            <h1>Ho Wei<em>Lun</em></h1>
+            <p class="sub">${SITE.role} · OCBC Bank · NTU</p>
+            ${SITE.intro.map(p => `<p class="intro">${p}</p>`).join("")}
+        </div>` },
+    { id: "s1", name: "OCBC", side: "left", html: job("01", ocbc) },
+    { id: "s2", name: "URECA", side: "right", html: job("02", ureca) },
+    { id: "s3", name: "ANGEL", side: "left", html: job("03", angel) },
+    { id: "s4", name: "NCS", side: "right", html: job("04", ncs) },
+    { id: "s5", name: "Deregify", side: "left", html: (p => `
+        <div class="label">05 — ${p.context}</div>
+        <h2>${p.title}</h2>
+        <div class="meta">${p.subtitle}</div>
+        ${list(p.highlights)}
+        ${thumbs(p.images)}`)(SITE.projects[0]) },
+    { id: "s6", name: "BrainHack", side: "right", html: (([a, b]) => `
+        <div class="label">06 — ${a.org} · ${a.result}, 2026 &amp; 2024</div>
+        <h2>BrainHack<br><em>TIL-AI</em></h2>
+        <div class="meta">${a.location}</div>
+        <div class="yr">2026</div>
+        ${list(a.highlights)}
+        <div class="yr">2024</div>
+        ${list(b.highlights)}
+        ${thumbs(a.images.map(im => ({ ...im, caption: "2026 · " + im.caption }))
+            .concat(b.images.map(im => ({ ...im, caption: "2024 · " + im.caption }))))}`)(SITE.competitions) },
+    { id: "s7", name: "Education", side: "left", html: `
+        <div class="label">07 — Education &amp; skills</div>
+        <div class="edu">${SITE.education.map((e, k) => `
+            <div><h3>${e.school}</h3><div class="meta">${e.degree} · ${e.period}</div>${e.notes.map(n => `<p>${n}</p>`).join("")}</div>
+            ${k === 0 ? `<div class="scholar"><h3>${SITE.scholarship.name}</h3><div class="meta">${SITE.scholarship.detail}</div></div>` : ""}`).join("")}
         </div>
-    </nav>
+        <div class="skills">${Object.entries(SITE.skills).map(([k, v]) => `<div><h4>${k}</h4><div>${v.map(s => `<span>${s}</span>`).join("")}</div></div>`).join("")}</div>` },
+    { id: "s8", name: "Contact", cls: "contact", html: `
+        <div class="label" style="justify-content:center">08 — Say hello</div><br>
+        <a class="mail" href="mailto:${SITE.email}">${SITE.email}</a>
+        <div class="links"><a href="${SITE.linkedin}" target="_blank" rel="noopener">LinkedIn</a><a href="${SITE.github}" target="_blank" rel="noopener">GitHub</a></div>` }
+];
 
-    <!-- Page Sections (rendered by sections/*.js) -->
-    <main class="content-wrapper">
-        <section id="hero" class="site-section hero-section"></section>
-        <section id="about" class="site-section glass-card"></section>
-        <section id="skills" class="site-section glass-card"></section>
-        <section id="projects" class="site-section glass-card"></section>
-        <section id="experience" class="site-section glass-card"></section>
-        <section id="education" class="site-section glass-card"></section>
-        <section id="hackathons" class="site-section glass-card"></section>
-        <section id="contact" class="site-section glass-card contact-card"></section>
-    </main>
+document.getElementById("stations").innerHTML = STATIONS.map(s => `
+    <section class="station ${s.cls || ""}" id="${s.id}" data-side="${s.side || ""}"><div class="panel">${s.html}</div>
+    ${s.id === "s0" ? `<div class="scroll-hint">SCROLL<i></i></div>` : ""}</section>`).join("");
+document.getElementById("rail").innerHTML = STATIONS.map(s => `<a href="#${s.id}"><span>${s.name}</span><i></i></a>`).join("");
 
-    <!-- Data Files (order matters — loaded before sections) -->
-    <script src="data/projects.js"></script>
-    <script src="data/hackathons.js?v=2.2"></script>
-    <script src="data/skills.js?v=2.1"></script>
-    <script src="data/experience.js?v=2.1"></script>
-    <script src="data/education.js?v=2.1"></script>
-    <!-- Section Renderers -->
-    <script src="sections/hero.js"></script>
-    <script src="sections/about.js"></script>
-    <script src="sections/skills.js"></script>
-    <script src="sections/projects.js?v=2.1"></script>
-    <script src="sections/experience.js?v=2.1"></script>
-    <script src="sections/education.js"></script>
-    <script src="sections/hackathons.js?v=2.1"></script>
-    <script src="sections/contact.js"></script>
+const lightbox = document.getElementById("lightbox");
+document.addEventListener("click", e => {
+    const b = e.target.closest(".thumbs button");
+    if (b) {
+        lightbox.querySelector("img").src = b.dataset.src;
+        lightbox.querySelector("p").textContent = b.dataset.cap;
+        lightbox.classList.add("open");
+    } else if (e.target.closest("#lightbox")) lightbox.classList.remove("open");
+});
 
-    <!-- Main Script (canvas + nav + scroll) -->
-    <script src="script.js?v=2.2"></script>
+const stationEls = [...document.querySelectorAll(".station")];
+const railLinks = [...document.querySelectorAll(".rail a")];
+// text animates in every time its section arrives, and resets once it has left the screen
+const revealer = new IntersectionObserver(entries => entries.forEach(en => en.target.classList.toggle("in", en.isIntersecting)), { threshold: 0.18 });
+stationEls.forEach(el => revealer.observe(el));
+
+// ============================================================
+// FORMATIONS: 2,000 points, one shape per station
+// ============================================================
+const N = 2000;
+let seed = 7;
+const rand = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+const gauss = () => (rand() + rand() + rand() - 1.5) * 0.8;
+
+function galaxy() {
+    const p = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) {
+        const r = Math.pow(rand(), 1.4) * 5.2 + 0.15;
+        const a = r * 1.05 + (i % 3) * (Math.PI * 2 / 3) + gauss() * 0.35;
+        p.set([Math.cos(a) * r, gauss() * 0.25 * (1.4 - r / 5.2), Math.sin(a) * r], i * 3);
+    }
+    return p;
+}
+// 50 x 40 sheet rolling in slow waves (animated)
+function wave(time) {
+    const p = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) {
+        const x = (i % 50 - 24.5) * 0.12, z = (Math.floor(i / 50) - 19.5) * 0.14;
+        const y = Math.sin(x * 1.1 + time * 0.7) * 0.35 + Math.cos(z * 1.3 + time * 0.5) * 0.25 - 0.4;
+        p.set([x, y, z], i * 3);
+    }
+    return p;
+}
+// 20 random-walk price series
+function series() {
+    const p = new Float32Array(N * 3);
+    for (let s = 0; s < 20; s++) {
+        let y = 0;
+        for (let t = 0; t < 100; t++) {
+            y += gauss() * 0.11 + (s === 7 ? 0.02 : 0);
+            p.set([(t - 49.5) * 0.062, y * 0.75 - 0.4, (s - 9.5) * 0.2], (s * 100 + t) * 3);
+        }
+    }
+    return p;
+}
+// cross-section scan: body outline, two lungs, spine, one lesion
+function scan() {
+    const p = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) {
+        const a = rand() * Math.PI * 2, z = gauss() * 0.12;
+        let x, y;
+        if (i < 700) { const k = 1 + gauss() * 0.02 + (i % 3) * 0.04; x = Math.cos(a) * 3.6 * k; y = Math.sin(a) * 2.5 * k; }
+        else if (i < 1500) { const side = i % 2 ? 1 : -1, r = Math.sqrt(rand()); x = side * 1.55 + Math.cos(a) * 1.05 * r; y = 0.25 + Math.sin(a) * 1.55 * r; }
+        else if (i < 1800) { const r = 0.45 + gauss() * 0.05; x = Math.cos(a) * r; y = -1.65 + Math.sin(a) * r; }
+        else { const r = Math.sqrt(rand()) * 0.32; x = 1.85 + Math.cos(a) * r; y = 0.85 + Math.sin(a) * r; }
+        p.set([x, y, z], i * 3);
+    }
+    return p;
+}
+// three strands flowing along a pipeline (animated)
+const pipeT = Float32Array.from({ length: N }, () => rand());
+const pipeJ = Float32Array.from({ length: N * 2 }, () => gauss() * 0.09);
+function pipeline(time) {
+    const p = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) {
+        const t = (pipeT[i] + time * 0.05) % 1, s = i % 3, x = (t - 0.5) * 7;
+        const merge = Math.min(1, Math.max(0, (t - 0.3) / 0.4));
+        const ang = s * 2.094 + t * 9, rad = 0.9 * (1 - merge) + 0.22;
+        p.set([x, Math.cos(ang) * rad + pipeJ[i * 2], Math.sin(ang) * rad + pipeJ[i * 2 + 1]], i * 3);
+    }
+    return p;
+}
+// stacked pages with lines of text
+function pages() {
+    const p = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) {
+        const pg = i % 3, k = Math.floor(i / 3), line = k % 22, pos = Math.floor(k / 22) / 30;
+        const lineLen = 0.55 + ((line * 37) % 11) / 25;
+        const x = (Math.min(pos, lineLen) - 0.5) * 3.2, y = (10.5 - line) * 0.2;
+        p.set([x + pg * 0.7 - 0.7, y - pg * 0.45 + 0.45, -pg * 1.1 + 1.1], i * 3);
+    }
+    return p;
+}
+// game arena: floor grid plus pillars
+function arena() {
+    const p = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) {
+        let x, y, z;
+        if (i < 1100) { x = (i % 33 - 16) * 0.2; z = (Math.floor(i / 33) % 33 - 16) * 0.2; y = -1.2; }
+        else { const k = i - 1100, pil = k % 36, h = Math.floor(k / 36); x = ((pil % 6) - 2.5) * 1.1; z = (Math.floor(pil / 6) - 2.5) * 1.1; y = -1.2 + h * 0.07; x += ((h * 7) % 3 - 1) * 0.08; z += ((h * 5) % 3 - 1) * 0.08; }
+        p.set([x, y, z], i * 3);
+    }
+    return p;
+}
+function sphere() {
+    const p = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) {
+        const y = 1 - (i / (N - 1)) * 2, r = Math.sqrt(1 - y * y), a = i * 2.39996;
+        p.set([Math.cos(a) * r * 3, y * 3, Math.sin(a) * r * 3], i * 3);
+    }
+    return p;
+}
+// a wide, flat ring of dust: the closing horizon
+function horizon() {
+    const p = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) {
+        const r = 2.8 + Math.pow(rand(), 0.8) * 3.4, a = rand() * Math.PI * 2;
+        p.set([Math.cos(a) * r, -0.6 + gauss() * 0.03 * (r - 2.4), Math.sin(a) * r], i * 3);
+    }
+    return p;
+}
+
+// highlighted (gold) points per formation
+const highlight = (fn) => Float32Array.from({ length: N }, (_, i) => fn(i) ? 1 : 0);
+const GOLD = [
+    highlight(i => i % 97 === 0),
+    highlight(i => i % 53 === 0),
+    highlight(i => i >= 700 && i < 800),
+    highlight(i => i >= 1800 && i % 2 === 0),
+    highlight(i => i % 3 === 0 && pipeT[i] > 0.6),
+    highlight(i => i % 11 === 0),
+    highlight(i => i >= 1100 && (i - 1100) % 36 === 14),
+    highlight(i => i % 41 === 0),
+    highlight(i => i % 37 === 0)
+];
+
+// per station: sideways offset so the shape sits opposite the text, spin, camera position
+const SHIFT = [0, 2.9, -3.2, 2.6, -3.0, 2.8, -2.6, 2.6, 0];
+const SPIN = [1, 0, 0, 0, 0, 0, 0, 1, 1];
+const CAM = [[0, 3.2, 9.5], [0, 2.4, 8.5], [0, 1.4, 9], [0, 0, 8.5], [0, 1.6, 8.5], [0, 0.6, 8], [0, 3.6, 8], [0, 0.8, 9], [0, 2.6, 10.5]];
+
+start();
+
+function start() {
+    const SHAPES = [galaxy(), wave, series(), scan(), pipeline, pages(), arena(), sphere(), horizon()];
+    const shapeAt = (k, time) => typeof SHAPES[k] === "function" ? SHAPES[k](time) : SHAPES[k];
+
+    // ---------- renderer ----------
+    const canvas = document.getElementById("gl");
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x05060a);
+    scene.fog = new THREE.FogExp2(0x05060a, 0.045);
+    const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 100);
+
+    const geo = new THREE.BufferGeometry();
+    const pos = new Float32Array(SHAPES[0]);
+    const col = new Float32Array(N);
+    const size = Float32Array.from({ length: N }, () => 0.6 + rand() * 0.9);
+    geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute("gold", new THREE.BufferAttribute(col, 1));
+    geo.setAttribute("size", new THREE.BufferAttribute(size, 1));
+    const mat = new THREE.ShaderMaterial({
+        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+        uniforms: { uScale: { value: renderer.getPixelRatio() * 46 } },
+        vertexShader: `
+            attribute float gold; attribute float size; uniform float uScale; varying float vGold; varying float vFade;
+            void main() {
+                vec4 mv = modelViewMatrix * vec4(position, 1.0);
+                gl_Position = projectionMatrix * mv;
+                gl_PointSize = size * (1.0 + gold * 0.7) * uScale / -mv.z;
+                vGold = gold; vFade = clamp(1.3 - (-mv.z) / 22.0, 0.15, 1.0);
+            }`,
+        fragmentShader: `
+            varying float vGold; varying float vFade;
+            void main() {
+                float d = length(gl_PointCoord - 0.5);
+                float a = smoothstep(0.5, 0.0, d);
+                vec3 c = mix(vec3(0.82, 0.80, 0.76), vec3(1.0, 0.68, 0.22), vGold);
+                gl_FragColor = vec4(c * (0.55 + vGold * 0.35), a * vFade);
+            }`
+    });
+    const group = new THREE.Group();
+    group.add(new THREE.Points(geo, mat));
+    scene.add(group);
+
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.75, 0.5, 0.18);
+    composer.addPass(bloom);
+    composer.addPass(new OutputPass());
+
+    addEventListener("resize", () => {
+        camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+        renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight);
+    });
+
+    // ---------- scroll -> continuous station index ----------
+    // Anchored on the centre of each text panel, so a shape changes as its text arrives,
+    // not when the section's top edge does
+    let anchors = [];
+    const measure = () => {
+        anchors = stationEls.map(el => {
+            const r = el.querySelector(".panel").getBoundingClientRect();
+            return r.top + scrollY + r.height / 2;
+        });
+    };
+    measure(); addEventListener("resize", measure); addEventListener("load", measure);
+    function stationProgress() {
+        const y = scrollY + innerHeight * 0.5;
+        const last = anchors.length - 1;
+        if (y >= anchors[last]) return last;
+        for (let i = last - 1; i >= 0; i--) {
+            if (y >= anchors[i]) return i + (y - anchors[i]) / (anchors[i + 1] - anchors[i]);
+        }
+        return 0;
+    }
+    const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    const mouse = { x: 0, y: 0, sx: 0, sy: 0 };
+    addEventListener("pointermove", e => { mouse.x = e.clientX / innerWidth - 0.5; mouse.y = e.clientY / innerHeight - 0.5; });
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const narrow = () => innerWidth < 760;
+
+    const veilL = document.getElementById("veilL"), veilR = document.getElementById("veilR");
+    const clock = new THREE.Clock();
+    let smooth = 0;
+    let frameNo = 0, shownActive = -1;
+    const counter = document.getElementById("counter");
+    function frame() {
+        const time = clock.getElapsedTime();
+        if (++frameNo % 60 === 0) measure();   // panels change height as images and fonts load
+        smooth += (stationProgress() - smooth) * 0.08;
+        const i = Math.min(Math.floor(smooth), SHAPES.length - 1), j = Math.min(i + 1, SHAPES.length - 1);
+        // hold each shape while its text is on screen; morph during the hand-over between panels
+        const t = ease(Math.min(1, Math.max(0, (smooth - i - 0.3) / 0.4)));
+        const A = shapeAt(i, time), B = shapeAt(j, time);
+        const sh = narrow() ? 0 : SHIFT[i] + (SHIFT[j] - SHIFT[i]) * t;
+        group.position.x = sh;
+        const on = (k, which) => STATIONS[k].side === which ? 1 : 0;
+        const left = on(i, "left") + (on(j, "left") - on(i, "left")) * t;
+        const right = on(i, "right") + (on(j, "right") - on(i, "right")) * t;
+        veilL.style.opacity = narrow() ? left + right : left;
+        veilR.style.opacity = right;
+        const wob = reduce ? 0 : 0.035;
+        for (let k = 0; k < N; k++) {
+            const o = k * 3, ph = k * 0.37 + time * 0.8;
+            pos[o] = A[o] + (B[o] - A[o]) * t + Math.sin(ph) * wob;
+            pos[o + 1] = A[o + 1] + (B[o + 1] - A[o + 1]) * t + Math.cos(ph * 1.3) * wob;
+            pos[o + 2] = A[o + 2] + (B[o + 2] - A[o + 2]) * t;
+            col[k] = GOLD[i][k] + (GOLD[j][k] - GOLD[i][k]) * t;
+        }
+        geo.attributes.position.needsUpdate = true;
+        geo.attributes.gold.needsUpdate = true;
+
+        // camera eases between station viewpoints, with mouse parallax
+        const ca = CAM[i], cb = CAM[j];
+        mouse.sx += (mouse.x - mouse.sx) * 0.05; mouse.sy += (mouse.y - mouse.sy) * 0.05;
+        camera.position.set(
+            ca[0] + (cb[0] - ca[0]) * t + mouse.sx * 1.4,
+            ca[1] + (cb[1] - ca[1]) * t - mouse.sy * 1.0,
+            (ca[2] + (cb[2] - ca[2]) * t) * (narrow() ? 1.45 : 1));
+        camera.lookAt(sh * 0.35, 0, 0);
+        // round shapes spin; every other shape faces the camera with a slow sway
+        const spin = SPIN[i] + (SPIN[j] - SPIN[i]) * t;
+        let ry = Math.atan2(Math.sin(group.rotation.y), Math.cos(group.rotation.y));
+        if (reduce) ry = 0;
+        else if (spin > 0.5) ry += spin * 0.002;
+        else ry += (Math.sin(time * 0.25) * 0.16 - ry) * 0.04;
+        group.rotation.y = ry;
+
+        const active = Math.min(Math.round(smooth), railLinks.length - 1);
+        railLinks.forEach((a, k) => a.classList.toggle("on", k === active));
+        if (active !== shownActive) {
+            shownActive = active;
+            counter.innerHTML = `<b>${String(active + 1).padStart(2, "0")}</b> / ${String(STATIONS.length).padStart(2, "0")} · ${STATIONS[active].name}`;
+        }
+        composer.render();
+        requestAnimationFrame(frame);
+    }
+    frame();
+    // the cover lifts as soon as the first frame is drawn
+    document.getElementById("loader").classList.add("done");
+}
+</script>
 </body>
-
 </html>
