@@ -20,6 +20,7 @@ const SITE = {
             stat: { value: "Agentic RAG", label: "AI that plans its own multi-step research" },
             highlights: [
                 "Led the architecture and built an enterprise-grade Retrieval-Augmented Generation (RAG) system over a 400-document legal and compliance corpus, deployed across multiple departments to resolve complex cross-border advisory queries such as breach assessment, permissibility, and regulatory Q&A.",
+                "Collaborated with department stakeholders to understand their requirements, deliverables and complex cases, presenting solutions and refining them through user testing.",
                 "Extending the system into an agentic RAG harness that scales from 400 to 2,000 documents, in which the LLM plans its own multi-step research through tool calling and agent skills, enabling exhaustive comparison across documents and tracing of rules to their source, beyond single-pass retrieval.",
                 "Developed the core retrieval pipeline with hybrid dense and sparse search, question classification and routing, and reranking.",
                 "Designed an automated LLM-as-judge verification and self-correction loop that validates each answer against its sources before delivery, reducing unsupported claims and citation errors.",
